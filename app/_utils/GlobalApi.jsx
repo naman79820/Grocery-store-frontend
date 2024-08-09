@@ -4,8 +4,22 @@ const axiosClient = axios.create({
     baseURL:"http://localhost:1337/api/"
 })
 
-const getCategory =() => {
-  return  axiosClient.get('/categories')
-}
+const getCategory =() => 
+   axiosClient.get('/categories?populate=*')
+  
 
-export default {getCategory}
+const getSliders=()=>
+  axiosClient.get('/sliders?populate=*').then(resp=>{
+   
+   return  resp.data.data
+  })
+
+  const getCategoryList =() => 
+    axiosClient.get('/categories?populate=*').then(resp=>{
+   
+      return  resp.data.data
+     })
+   
+
+
+export default {getCategory , getSliders , getCategoryList}
