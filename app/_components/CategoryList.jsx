@@ -8,7 +8,7 @@ const CategoryList = ({categoryList}) => {
       <h2 className='font-bold text-green-700 text-2xl  '>
         Shop By Category
       </h2>
-      <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-5  w-[97%]'>
+      <div className='grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-5  w-[97%]'>
       {categoryList.map((category , index)=>(
       
       <div key={index} className='flex flex-col items-center mt-2 bg-green-100 gap-2 p-3 group rounded-lg cursor-pointer hover:bg-green-500' >

@@ -34,10 +34,10 @@ useEffect(() => {
   })
   }
   return (
-  <div className=' flex w-screen h-20 shadow-md justify-between'>
+  <div className=' flex w-[100%] h-20 shadow-md justify-between'>
    <nav className='    flex items-center gap-10 max-[520px]:gap-2'>
    <div>
-    <img src="grocery logo.png" className='w-[150px] object-contain max-[400px]:w-[100px] max-[350px]:w-[70px]' alt="" />
+    <Image src="/grocery logo.png" height={200} width={150} alt="icon" className='w-[150px] object-contain max-[400px]:w-[100px] max-[350px]:w-[70px]'  />
    </div>
   
     
