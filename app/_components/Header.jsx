@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import GlobalApi from '../_utils/GlobalApi'
+import Link from 'next/link'
 
 
 const Header = () => {
@@ -37,10 +38,11 @@ useEffect(() => {
   <div className=' flex w-[100%] h-20 shadow-md justify-between'>
    <nav className='    flex items-center gap-10 max-[520px]:gap-2'>
    <div>
-    <Image src="/grocery logo.png" height={200} width={150} alt="icon" className='w-[150px] object-contain max-[400px]:w-[100px] max-[350px]:w-[70px]'  />
-   </div>
+    <Link href={process.env.NEXT_PUBLIC_URL}>
+    <Image  src="/grocery logo.png" height={200} width={150} alt="icon" className='w-[150px] object-contain max-[400px]:w-[100px] max-[350px]:w-[70px] cursor-pointer'  />
   
-    
+   </Link>
+   </div>
     <DropdownMenu >
   <DropdownMenuTrigger> <h2 className='flex gap-2 font-bold p-3 px-6 max-[460px]:px-3 max-[460px]:text-sm bg-gray-300 rounded-full cursor-pointer hover:bg-gray-400'>
       <LayoutGrid/> Category
@@ -49,6 +51,7 @@ useEffect(() => {
     <DropdownMenuLabel>Browse Category</DropdownMenuLabel>
     <DropdownMenuSeparator />
     {categoryList.map((category , index)=>(
+         <Link href={"/products-category/" + category.attributes.Name}>
        <DropdownMenuItem key={index} className="flex items-center gap-2 cursor-pointer">
         <Image src={
           process.env.NEXT_PUBLIC_BACKEND_BASE_URL+
@@ -58,8 +61,12 @@ useEffect(() => {
           height={30}
         
         />
-        <h2 className='text-base font-bold'>{category?.attributes?.Name}</h2></DropdownMenuItem>
+        
+        <h2 className='text-base font-bold'>{category?.attributes?.Name}</h2>
+        </DropdownMenuItem>
+         </Link>
     ))}
+    
    
    
   </DropdownMenuContent>
