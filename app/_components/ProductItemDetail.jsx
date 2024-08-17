@@ -20,7 +20,7 @@ const ProductItemDetail = ({ product }) => {
   const jwt = sessionStorage.getItem('jwt')
   const user = JSON.parse(sessionStorage.getItem('user'))
   const router = useRouter()
-  const {updateCart, setupdateCart}=useContext(UpdateCartContext)
+  const {updateCart, setUpdateCart}=useContext(UpdateCartContext)
 
   const addToCart = () =>{
     setLoading(true)
@@ -43,7 +43,7 @@ const ProductItemDetail = ({ product }) => {
   }
 
   toast('Added to Cart')
-  setupdateCart(!updateCart)
+  setUpdateCart(!updateCart)
   setLoading(false)
 
   GlobalApi.addToCart(data,jwt).then(resp=>{
