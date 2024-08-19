@@ -1,5 +1,6 @@
 "use client";  // Ensures the component renders client-side
 import { Outfit } from "next/font/google";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js"
 import "./globals.css";
 import Header from "./_components/Header";
 import { useState, useEffect } from "react";
@@ -17,6 +18,8 @@ export default function RootLayout({ children }) {
   const showHeader = !(pathname === "/sign-in" || pathname === "/create-account");
 
   return (
+    <PayPalScriptProvider options={{ clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID , currency:"USD"  }}
+    >
     <html lang="en">
       <body className={outfit.className}>
         <UpdateCartContext.Provider value={{ updateCart, setUpdateCart }}>
@@ -26,5 +29,6 @@ export default function RootLayout({ children }) {
         </UpdateCartContext.Provider>
       </body>
     </html>
+    </PayPalScriptProvider>
   );
 }

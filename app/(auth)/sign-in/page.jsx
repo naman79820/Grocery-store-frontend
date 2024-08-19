@@ -36,7 +36,7 @@ const SignIn = () => {
     router.push('/')
     setloader(true)
    },(e)=>{
-    console.log(e)
+    
     toast(e?.response?.data?.error?.message)
    })
 

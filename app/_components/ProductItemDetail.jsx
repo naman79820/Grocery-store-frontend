@@ -47,7 +47,7 @@ const ProductItemDetail = ({ product }) => {
   setLoading(false)
 
   GlobalApi.addToCart(data,jwt).then(resp=>{
-    console.log(resp)
+   
   },(e)=>{
     toast('Error while adding into cart')
     setLoading(false)
@@ -105,7 +105,7 @@ const ProductItemDetail = ({ product }) => {
             <h2 className="text-xl max-[320px]:text-base ">= {(Quantity*productTotalPrice).toFixed(2)}₹</h2>
             </div>
             <div className="max-[768px]:mx-auto  max-[768px]:w-full max-[768px]:items-center max-[768px]:ml-10 max-[360px]:ml-7">
-            <Button onClick={()=>addToCart() + console.log("hi")} className="flex gap-3 mt-5  "
+            <Button onClick={()=>addToCart() } className="flex gap-3 mt-5  "
               disabled={Loading}
               >
               <ShoppingBasket />

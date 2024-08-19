@@ -31,8 +31,7 @@ const CreateAccount = () => {
   const onCreateAccount =()=>{
     setloader(true)
   GlobalApi.registerUser(username,email,password).then(resp=>{
-    console.log(resp.data.user)
-    console.log(resp.data.jwt)
+  
     sessionStorage.setItem('user', JSON.stringify(resp.data.user))
     sessionStorage.setItem('jwt',resp.data.jwt)
     toast("Account Created Successfully.")

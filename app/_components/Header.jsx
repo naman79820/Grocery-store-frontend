@@ -96,7 +96,7 @@ const Header = () => {
       const cartItemList_ = await GlobalApi.getCartItems(user.id, jwt);
       setTotalCartItem(cartItemList_?.length);
       setCartItemList(cartItemList_);
-      console.log(cartItemList_);
+    
     } catch (error) {
       console.error("Error fetching cart items:", error);
     }
@@ -130,8 +130,8 @@ const Header = () => {
       <nav className="flex items-center gap-10 max-[520px]:gap-2">
         <div>
           <Link href={process.env.NEXT_PUBLIC_URL}>
-            <Image
-              src="/grocery logo.png"
+          <Image
+              src="/grocerylogo.png"
               height={200}
               width={150}
               alt="icon"

@@ -68,7 +68,8 @@ const getCartItems = (userId,jwt) =>
       amount:item.attributes.amount,
       image:item.attributes.products?.data[0].attributes.images.data[0].attributes.url,
       actualPrice:item.attributes.products?.data[0].attributes.mrp,
-      id:item.id
+      id:item.id,
+      product:item.attributes.products?.data[0].id,
 
 
     }))
@@ -79,6 +80,13 @@ const getCartItems = (userId,jwt) =>
     headers: {
       Authorization: "Bearer " + jwt,
     }
+  })
+
+  const createOrder =(data,jwt)=>axiosClient.post('/orders',data,{
+    headers: {
+      Authorization: "Bearer " + jwt,
+    }
+
   })
 
 export default {
@@ -92,4 +100,5 @@ export default {
   addToCart,
   getCartItems,
   deleteCartItem,
+  createOrder
 };
