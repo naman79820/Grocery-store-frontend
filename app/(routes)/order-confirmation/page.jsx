@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { CheckCircle2 } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
 const page = () => {
@@ -9,7 +10,7 @@ const page = () => {
           <CheckCircle2 className='h-24 w-24 text-green-700'/>
           <h2 className='font-medium text-3xl text-green-700'>Order Successful</h2>
           <h2>Thank You So Much For The Order</h2>
-          <Button className="mt-8">Track Your Order</Button>
+        <Link href={'/my-order'}>  <Button className="mt-8">Track Your Order</Button></Link>
         </div>
      
     </div>

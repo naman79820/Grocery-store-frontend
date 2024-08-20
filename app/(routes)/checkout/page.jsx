@@ -2,10 +2,8 @@
 import GlobalApi from "@/app/_utils/GlobalApi";
 import { Input } from "@/components/ui/input";
 import { PayPalButtons } from "@paypal/react-paypal-js";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { ArrowBigRight } from "lucide-react";
 import { toast } from "sonner";
 
 const Checkout = () => {
@@ -21,7 +19,21 @@ const Checkout = () => {
   const [phone, setPhone] = useState("");
   const [zip, setZip] = useState("");
   const [address, setAddress] = useState("");
-  
+
+  // Using refs to ensure stable access to state values in the onApprove function
+  const usernameRef = useRef(username);
+  const emailRef = useRef(email);
+  const phoneRef = useRef(phone);
+  const zipRef = useRef(zip);
+  const addressRef = useRef(address);
+
+  useEffect(() => {
+    usernameRef.current = username;
+    emailRef.current = email;
+    phoneRef.current = phone;
+    zipRef.current = zip;
+    addressRef.current = address;
+  }, [username, email, phone, zip, address]);
 
   useEffect(() => {
     if (storedUser && storedJwt) {
@@ -35,7 +47,8 @@ const Checkout = () => {
     try {
       const cartItemList_ = await GlobalApi.getCartItems(userId, jwt);
       setTotalCartItem(cartItemList_?.length || 0);
-      setCartItemList(cartItemList_ || []);
+      setCartItemList(cartItemList_);
+      console.log("Cart Item List:", cartItemList_);
     } catch (error) {
       console.error("Error fetching cart items:", error);
     }
@@ -56,7 +69,7 @@ const Checkout = () => {
     return taxAmount.toFixed(2);
   };
 
-  const deliveryFee = 25;
+  const deliveryFee = 5;
 
   const calculateTotalAmount = () => {
     const subtotalAmount = parseFloat(Subtotal) || 0;
@@ -65,31 +78,41 @@ const Checkout = () => {
     return totalAmount.toFixed(2);
   };
 
-  const onApprove = (data) => {
-    console.log(data);
+  const onApprove = async (data) => {
     const payLoad = {
       data: {
-        paymentId: data.paymentId.toString(),
+        paymentId: data.paymentID.toString(),
         totalOrderAmount: calculateTotalAmount(),
-        username: username,
-        email: email,
-        phone: phone,
-        zip: zip,
-        address: address,
+        username: usernameRef.current,
+        email: emailRef.current,
+        phone: phoneRef.current,
+        zip: zipRef.current,
+        address: addressRef.current,
         orderItemList: cartItemList,
-        userId:storedUser.id
+        userId: storedUser.id,
       },
     };
-    
-    GlobalApi.createOrder(payLoad, storedJwt).then(resp => {
-    console.log(resp);
-    toast("Order Placed Successfully!")
-    cartItemList.forEach(item , index =>{
-      GlobalApi.deleteCartItem(item.id).then(resp => {
-      })
-    })
-    router.replace('/order-confirmation')
-    })
+
+    console.log("Payload before sending to backend:", payLoad);
+
+    try {
+      // Step 1: Create the order
+      const orderResponse = await GlobalApi.createOrder(payLoad, storedJwt);
+      console.log("Order Response:", orderResponse);
+
+      // Step 2: Delete all cart items
+      const deletePromises = cartItemList.map((item) =>
+        GlobalApi.deleteCartItem(item.id, storedJwt)
+      );
+      await Promise.all(deletePromises);
+
+      // Step 3: Notify success and redirect
+      toast("Order Placed Successfully!");
+      router.replace("/order-confirmation");
+    } catch (error) {
+      console.error("Error during order processing:", error);
+      toast("Order processing failed, please try again.");
+    }
   };
 
   return (
@@ -103,23 +126,31 @@ const Checkout = () => {
           <div className="grid grid-cols-2 gap-10 mt-3">
             <Input
               placeholder="Name"
+              value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
             <Input
               placeholder="Email"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="grid grid-cols-2 gap-10 mt-3">
             <Input
               placeholder="Phone"
+              value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
-            <Input placeholder="Zip" onChange={(e) => setZip(e.target.value)} />
+            <Input
+              placeholder="Zip"
+              value={zip}
+              onChange={(e) => setZip(e.target.value)}
+            />
           </div>
           <div className="mt-3">
             <Input
               placeholder="Address"
+              value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
           </div>
@@ -143,9 +174,10 @@ const Checkout = () => {
             <h2 className="font-bold flex justify-between">
               Total: <span>{calculateTotalAmount()}₹</span>
             </h2>
-            {/* <Button onClick={()=>onApprove({paymentId:123})}> Payment <ArrowBigRight/></Button> */}
             <PayPalButtons
-            disabled={!(username&&email&&zip&&address&&phone)}
+              disabled={
+                !(username && email && zip && address && phone)
+              }
               style={{ layout: "horizontal" }}
               onApprove={onApprove}
               createOrder={(data, actions) => {
