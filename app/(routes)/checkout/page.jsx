@@ -26,6 +26,7 @@ const Checkout = () => {
   const phoneRef = useRef(phone);
   const zipRef = useRef(zip);
   const addressRef = useRef(address);
+  const cartItemListRef = useRef(cartItemList); // Add this ref to track cartItemList
 
   useEffect(() => {
     usernameRef.current = username;
@@ -33,7 +34,8 @@ const Checkout = () => {
     phoneRef.current = phone;
     zipRef.current = zip;
     addressRef.current = address;
-  }, [username, email, phone, zip, address]);
+    cartItemListRef.current = cartItemList; // Update ref when cartItemList changes
+  }, [username, email, phone, zip, address, cartItemList]);
 
   useEffect(() => {
     if (storedUser && storedJwt) {
@@ -48,7 +50,7 @@ const Checkout = () => {
       const cartItemList_ = await GlobalApi.getCartItems(userId, jwt);
       setTotalCartItem(cartItemList_?.length || 0);
       setCartItemList(cartItemList_);
-      console.log("Cart Item List:", cartItemList_);
+      
     } catch (error) {
       console.error("Error fetching cart items:", error);
     }
@@ -59,14 +61,15 @@ const Checkout = () => {
     cartItemList.forEach((element) => {
       total += parseFloat(element.amount) || 0;
     });
-
-    const parsedTotal = parseFloat(total) || 0;
-    setSubtotal(parsedTotal.toFixed(2));
+    setSubtotal(total.toFixed(2));
   }, [cartItemList]);
+
 
   const taxTotalAmount = () => {
     const taxAmount = parseFloat(Subtotal) * 0.09 || 0;
+   
     return taxAmount.toFixed(2);
+   
   };
 
   const deliveryFee = 5;
@@ -75,11 +78,25 @@ const Checkout = () => {
     const subtotalAmount = parseFloat(Subtotal) || 0;
     const taxAmount = parseFloat(taxTotalAmount()) || 0;
     const totalAmount = subtotalAmount + taxAmount + deliveryFee;
+  
+   
     return totalAmount.toFixed(2);
   };
 
+  useEffect(() => {
+    
+  
+    // Check if both are ready
+    if (Subtotal > 0 && taxTotalAmount() >= 0) {
+      calculateTotalAmount();
+    }
+  }, [Subtotal, taxTotalAmount]);
+
   const onApprove = async (data) => {
+
+    
     const payLoad = {
+      
       data: {
         paymentId: data.paymentID.toString(),
         totalOrderAmount: calculateTotalAmount(),
@@ -88,20 +105,21 @@ const Checkout = () => {
         phone: phoneRef.current,
         zip: zipRef.current,
         address: addressRef.current,
-        orderItemList: cartItemList,
+        orderItemList: cartItemListRef.current, // Use the ref to access the updated cartItemList
         userId: storedUser.id,
       },
+     
     };
-
-    console.log("Payload before sending to backend:", payLoad);
+   
+   
 
     try {
       // Step 1: Create the order
       const orderResponse = await GlobalApi.createOrder(payLoad, storedJwt);
-      console.log("Order Response:", orderResponse);
+      
 
       // Step 2: Delete all cart items
-      const deletePromises = cartItemList.map((item) =>
+      const deletePromises = cartItemListRef.current.map((item) =>
         GlobalApi.deleteCartItem(item.id, storedJwt)
       );
       await Promise.all(deletePromises);
@@ -181,11 +199,13 @@ const Checkout = () => {
               style={{ layout: "horizontal" }}
               onApprove={onApprove}
               createOrder={(data, actions) => {
+                const totalAmount = calculateTotalAmount();
+               
                 return actions.order.create({
                   purchase_units: [
                     {
                       amount: {
-                        value: calculateTotalAmount(), // Pass the correct total amount
+                        value: totalAmount, // Pass the correct total amount
                       },
                     },
                   ],

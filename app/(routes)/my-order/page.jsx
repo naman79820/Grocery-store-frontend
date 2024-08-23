@@ -25,7 +25,7 @@ const MyOrder = () => {
 
     const getMyOrder = async () => {
         const orderList_ = await GlobalApi.getMyOrder(user.id, jwt)
-        console.log(orderList_)
+     
         setOrderList(orderList_)
     }
 
@@ -38,10 +38,10 @@ const MyOrder = () => {
                 <h2 className='text-3xl font-bold text-green-700'>Order History</h2>
             </div>
             <div>
-                {orderList.map((item, index) => (
+                {orderList.map((item, index) => (       
                     <Collapsible key={index}>
                         <CollapsibleTrigger>
-                            <div className='border p-2 bg-slate-100 ml-20 flex justify-evenly gap-24'>
+                            <div className='border p-2 bg-slate-100 ml-20 flex justify-evenly gap-24 max-[830px]:gap-5 max-[830px]:text-center max-[830px]:ml-0'>
                                 <h2><span className='font-bold mr-2'>Order Date: </span>{moment(item?.createdAt).format('MMMM Do YYYY')}</h2>
                                 <h2><span className='font-bold mr-2'>Total Amount: </span> {item.totalOrderAmount}₹</h2>
                                 <h2><span className='font-bold mr-2'>Status: </span> Pending</h2>
